@@ -1,6 +1,9 @@
 [build-sysyem]
 requires = [
     "setuptools>=42",
-    "wheel"
+    "wheel",
+    "numpy",
+    "scipy",
+    "sympy"
 ]
 build-backend = "setuptools.build_meta"
