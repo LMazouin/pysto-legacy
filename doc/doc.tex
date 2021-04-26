@@ -39,6 +39,32 @@ is the normalization factor,
 
 is the radial part and $S_{lm}(\theta, \phi)$ is a real spherial harmonic.
 
+\section{Prolate spheroidal coordinates}
+
+For two-center integrals, it is more convenient to align the coordinate
+system of the two centers along the $z$-axis and use prolate spheroidal
+coordinates. In order to switch from spherical coordinates to the new
+coordinate system, we use the following identities:  
+
+\begin{equation}
+  \begin{aligned}
+    r_a = \frac{R(\mu+\nu)}{2}; \quad 
+    \cos\theta_a = \frac{1+\mu\nu}{\mu+\nu}; \quad &
+    \sin\theta_a = \frac{\sqrt{(\mu^2-1)(1-\nu^2)}}{\mu+\nu}; \\
+    r_b = \frac{R(\mu-\nu)}{2}; \quad 
+    \cos\theta_b = \frac{1-\mu\nu}{\mu-\nu}; \quad &
+    \sin\theta_b = \frac{\sqrt{(\mu^2-1)(1-\nu^2)}}{\mu-\nu}
+  \end{aligned}
+  \label{eq:prolate_spheroidal_coordinates}
+\end{equation}
+
+Inside the integrals this change gives 
+
+\begin{equation}
+  \dd V = \frac{R^3}{8} (\mu+\nu) (\mu-\nu) \dd\mu \dd\nu \dd\phi
+\label{eq:prolate_spheroidal_coordinates_integration}
+\end{equation}
+
 \section{Overlap integrals}
 
 The one-center overlap integrals
