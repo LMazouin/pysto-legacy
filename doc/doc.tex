@@ -1,0 +1,75 @@
+%        File: doc.tex
+%     Created: Lun mar 29 09:00  2021 C
+% Last Change: Lun mar 29 09:00  2021 C
+%
+\documentclass[a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage[]{amsmath}
+
+\newcommand{\rom}[1]{\mathrm{#1}} 
+\newcommand{\bold}[1]{\mathbf{#1}} 
+\newcommand{\dd}{\mathrm{d}} 
+
+\begin{document}
+
+\section{Slater-type orbitals}
+
+A real Slater-type orbital (STO) is defined as follows: 
+
+\begin{equation}
+  \chi_{nlm}(\zeta, \bold{r}) = N_n(\zeta) R_n(r, \zeta) S_{lm}(\theta, \phi)
+  \label{eq:real_sto}
+\end{equation}
+
+where
+
+\begin{equation}
+  N_n(\zeta) = \frac{(2\zeta)^{n+\frac{1}{2}}}{\sqrt{(2n)!}} 
+  \label{eq:norm_sto}
+\end{equation}
+
+is the normalization factor,
+
+\begin{equation}
+  R_n(r,\zeta) = r^{n-1} e^{-\zeta r} 
+  \label{eq:sto_radial_part}
+\end{equation}
+
+is the radial part and $S_{lm}(\theta, \phi)$ is a real spherial harmonic.
+
+\section{Overlap integrals}
+
+The one-center overlap integrals
+
+\begin{equation}
+  S_{nlm,n'l'm'}(\zeta, \zeta') = 
+  \int \chi_{nlm}^{\star}(\zeta, \bold{r}) 
+  \chi_{n'm'l'}(\zeta', \bold{r}) \dd V 
+  \label{eq:1c_overlap_integral} 
+\end{equation}
+
+is the most straightforward molecular integrals and is readily evaluated in
+spherical coordinates. The integration of the radial part yields
+
+\begin{equation}
+  \int_0^{\infty} R_n(\zeta,r) R_{n'}(\zeta',r) r^2 \dd r = 
+  \frac{(n+n')!}{(\zeta+\zeta')^{n+n'+1}}
+  \label{eq:1c_overlap_integral_radial_part_eval}
+\end{equation}
+
+and using the orthonormality condition of the spherical harmonics, the analytical
+form of one-center overlap is
+
+\begin{equation}
+  S_{nlm,n'l'm'}(\zeta, \zeta') = 
+  N_n(\zeta) N_{n'}(\zeta') 
+  \frac{(n+n')!}{(\zeta+\zeta')^{n+n'+1}}
+  \delta_{ll'}\delta_{mm'}
+\label{eq:1c_overlap_integral_result}
+\end{equation}
+
+\end{document}
+
+
