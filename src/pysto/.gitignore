@@ -1,2 +1,11 @@
 test_*
 *.f
+*.f90
+*.x
+*.mod
+*.o
+*.so
+*.sh
+*.pyf
+*.pyf.original
+__pycache__
