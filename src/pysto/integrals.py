@@ -4,6 +4,7 @@
 import itertools
 import numpy
 from scipy.special import factorial as fact
+from scipy.special import spherical_in as bessel
 
 from coefficients import *
 
@@ -14,7 +15,6 @@ def N(n, zeta):
     normalization factor of the radial part  of a STO
     """
     return zeta**(n + 0.5) / numpy.sqrt(fact(2*n))
-
 
 def A_func(x, n):
     """
@@ -53,8 +53,8 @@ def Q_func(n, np, q, A, B):
     Auxiliary function Q_nn'^q(p,pt)
     """
     Q = 0.0
-    for m in range(n1+n2+1):
-        Q += F[m,n,np] * A[n+np-m+q] * B[m+q]
+    for m in range(n+np+1):
+        Q += FF[m,n,np] * A[n+np-m+q] * B[m+q]
     return Q
 
 def rotation_matrix(lmax, e):
@@ -62,20 +62,19 @@ def rotation_matrix(lmax, e):
     calculates the rotation matrix for atomic orbitals explicitely
     """
 
-    T = numpy.zeros((2*lmax+1,2*lmax+1,lmax), dtype=numpy.float64)
+    T = numpy.zeros((2*lmax+1,2*lmax+1,lmax+1), dtype=numpy.float64)
 
     # calculate directional cosines and sinuses
     cost = e[2]
     sint = 0.0
     if (1.0 - cost**2) > EPS**2:
-        sint = np.sqrt(1.0-cost**2)
+        sint = numpy.sqrt(1.0-cost**2)
     cosp = 1.0
     sinp = 0.0
     if sint > EPS:
         cosp = e[0]/sint
         sinp = e[1]/sint
 
-    T[0,0,0] = 1.0
 
     # rotation of d orbitals
     #        dxy dyz dz2 dxz dx2-z2
@@ -85,7 +84,7 @@ def rotation_matrix(lmax, e):
     # dxz
     # dx2-y2
 
-    if lmax == 2:
+    if lmax > 1:
 
         SQRT3 = numpy.sqrt(3.0)
 
@@ -131,7 +130,8 @@ def rotation_matrix(lmax, e):
     # pz
     # px
 
-    if lmax == 1:
+    if lmax > 0:
+
         T[lmax-1,lmax-1,1] =  cosp
         T[lmax-1,lmax,  1] =  sinp * sint
         T[lmax-1,lmax+1,1] =  sinp * cost
@@ -142,10 +142,11 @@ def rotation_matrix(lmax, e):
         T[lmax+1,lmax,  1] =  sint * cosp
         T[lmax+1,lmax+1,1] =  cosp * cost
 
-        return T
-
     if lmax == 0:
-        return T
+        T[0,0,0] = 1.0
+
+    return T
+
 def rotate(lmax, lmin, la, lb, SS, T):
     """
     rotates the integrals from the aligned coordiante system to the molecular
@@ -200,7 +201,7 @@ def overlap(n, l, m, np, lp, mp, xyz, zet, zetp):
     A = A_func(p,  n+np)
     B = B_func(pt, n+np)
 
-    S = np.zeros(l1+1, dtype=np.float64)
+    SS = numpy.zeros(l+1, dtype=numpy.float64)
     for lam in range(lp+1):
         phase = (-1.0)**(lptmp - lam)
         alfinf = -lam + (l  + lam) % 2
@@ -216,23 +217,47 @@ def overlap(n, l, m, np, lp, mp, xyz, zet, zetp):
                 sgn = (-1.0)**k
                 i = lam * (lam + 1) // 2 + k
                 alk = alf + 2*lam - 2*k
-                dalf = D[l1, lam, alk]
-                g0 += sgn * B[i] * dalf
+                dalf = D[l, lam, alk]
+                g0 += sgn * F[i] * dalf
             g0 *= dbet
             al = alf + lam
             bl = bet - lam
-            na = n1 - alf
-            nb = n2 - bet
+            na = n - alf
+            nb = np - bet
             for k in range(alf+bet+1):
-                gq = g0 * F[k, al, bl]
-                S[lam] += gq * Q_func(na, nb, k, A, B)
-                #print(g0, gq, Q_func(na, nb, k, A, B))
-        S[lam] *= phase * r**(n + np + 1)
+                gq = g0 * FF[k, al, bl]
+                SS[lam] += gq * Q_func(na, nb, k, A, B)
+                # print(gq, Q_func(na, nb, k, A, B))
+        SS[lam] *= phase * r**(n + np + 1)
 
     e = xyz / r
     lmin = min(l, lp)
     lmax = max(l, lp)
     T = rotation_matrix(lmax, e)
-    S = rotate(lmax, lmin)
+    S = rotate(lmax, lmin, l, lp, SS, T)
     return S[l+m, lp+mp]
 
+def test():
+
+    r = 10.0
+    theta = numpy.pi * 0.0 / 180.0
+    phi = numpy.pi * 0.0 / 180.0
+    z = r * numpy.cos(theta)
+    y = r * numpy.sin(theta) * numpy.sin(phi)
+    x = r * numpy.sin(theta) * numpy.cos(phi)
+
+    xyz = numpy.array([x, y, z])
+    print(xyz)
+    #r = numpy.linalg.norm(xyz)
+    zet = 2.0
+    zetp= 1.8
+    print((zet-zetp)/(zet+zetp))
+    print(r*(zet+zetp)*0.5)
+    n, l, m = 3, 2, 2
+    np,lp,mp= 3, 2, 2
+    S = overlap(n, l, m, np, lp, mp, xyz, zet, zetp)
+    S *= N(n, zet) * N(np, zetp)
+    print('{:10.3f}{:20.12E}'.format(r, S))
+
+if __name__ == '__main__':
+    test()

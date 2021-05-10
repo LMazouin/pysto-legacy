@@ -4,19 +4,18 @@
 import itertools
 import numpy
 from scipy.special import binom
-from scipy.special import factorial2 as fact
+from scipy.special import factorial as fact
 from scipy.special import factorial2 as fact2
-from scipy.special import spherical_in as bessel
 
-NMAX = 6
+NMAX = 7
 LMAX = 3
 
 # generate and store a list with binomial coefficients
-B = numpy.zeros((NMAX+1)*(NMAX+2)//2, dtype=numpy.float64)
+F = numpy.zeros((NMAX+1)*(NMAX+2)//2, dtype=numpy.float64)
 for n in range(NMAX+1):
     for k in range(n+1):
         i = n * (n+1) // 2 + k
-        B[i] = binom(n, k)
+        F[i] = binom(n, k)
 
 
 def F_func(m, n, np):
@@ -29,7 +28,7 @@ def F_func(m, n, np):
     for k in range(kinf, ksup):
         i = n * (n + 1) // 2 + m - k
         j = np * (np + 1) // 2 + k
-        f += (-1.0)**k * B[i] * B[j]
+        f += (-1.0)**k * F[i] * F[j]
     return f
 
 def D_func(l, lam, bet):
@@ -43,8 +42,8 @@ def D_func(l, lam, bet):
     n = (l + bet) * (l + bet + 1) // 2 + bet - lam
     term1  = 0.5**l
     term2  = (-1.0)**lbet
-    term3 = numpy.sqrt((2*l + 1) / 2) * numpy.sqrt(B[i] / B[j])
-    term4 = B[m] * B[n]
+    term3 = numpy.sqrt((2*l + 1) / 2) * numpy.sqrt(F[i] / F[j])
+    term4 = F[m] * F[n]
     return term1 * term2 * term3 * term4
 
 def G0_func(l, lp, lam, alf, bet):
@@ -61,14 +60,14 @@ def G0_func(l, lp, lam, alf, bet):
         i = lam * (lam + 1) // 2 + k
         alk = alf + 2*lam - 2*k
         dalf = D_function(l, lam, alk)
-        s += sgn * B[i] * dalf
+        s += sgn * F[i] * dalf
     return s * dbet
 
-F = numpy.zeros((2*NMAX+1, NMAX+1, NMAX+1), dtype=numpy.float64)
-r = range(NMAX+1, NMAX+1)
+FF = numpy.zeros((2*NMAX+1, NMAX+1, NMAX+1), dtype=numpy.float64)
+r = range(NMAX+1)
 for n, np in itertools.product(r, r):
     for m in range(n+np+1):
-        F[m,n,np] = F_func(m, n, np)
+        FF[m,n,np] = F_func(m, n, np)
 
 D = numpy.zeros((LMAX+1, LMAX+1, LMAX+1), dtype=numpy.float64)
 for l in range(LMAX+1):
@@ -80,8 +79,8 @@ for l in range(LMAX+1):
 ANJ = numpy.zeros((NMAX+1)*(NMAX+2)//2, dtype=numpy.float64)
 for n in range(NMAX):
     for j in range(n+1):
-        ind = n * (n + 1) // 2 + j
-        ANJ[ind] = fact(n) * (2.0*j + 1.0) / (fact2(n-j) * fact2(n+j+1))
+        i = n * (n + 1) // 2 + j
+        ANJ[i] = fact(n) * (2.0*j + 1.0) / (fact2(n-j) * fact2(n+j+1))
 
 if __name__ == '__main__':
     pass
