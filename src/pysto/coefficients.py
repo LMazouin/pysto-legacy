@@ -7,7 +7,7 @@ from scipy.special import binom
 from scipy.special import factorial as fact
 from scipy.special import factorial2 as fact2
 
-NMAX = 7
+NMAX = 4
 LMAX = 3
 
 # generate and store a list with binomial coefficients
